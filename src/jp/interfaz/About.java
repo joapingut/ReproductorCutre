@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.interfaz;
 
 /**
@@ -52,7 +48,7 @@ public class About extends javax.swing.JDialog {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel4.setText("Descripción:");
 
-        LabelNumVersion.setText("1.5");
+        LabelNumVersion.setText("1.7");
 
         jLabel5.setText("Reproductor de audio multiformato.");
 
