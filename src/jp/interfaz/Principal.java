@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.interfaz;
 
 import java.io.File;
@@ -89,6 +85,7 @@ public class Principal extends javax.swing.JFrame {
                         BotonAvanzar.doClick();
                     }
                 }
+                System.gc();
                 break;
             case RESUME:
                 BotonPP.setText("Pausa");
@@ -110,7 +107,9 @@ public class Principal extends javax.swing.JFrame {
 
     public void alterarMinutero(long microsec) {
         Integer hour, min, sec;
-        sec = (int) (microsec / 1000000);
+        //Calculo del microsegundo
+        sec = (int)microsec/1000000;
+        //Calculo del minutero
         min = sec / 60;
         sec = sec - min * 60;
         hour = min / 60;
@@ -135,10 +134,10 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public static void rellenar(int ahora, int total, long microsec) {
-        BarraProgreso.setMaximum(total);
-        BarraProgreso.setValue(ahora);
-        BarraProgreso.repaint();
         este.alterarMinutero(microsec);
+        jSlider1.setMaximum(total);
+        if(!jSlider1.getValueIsAdjusting())
+            jSlider1.setValue(ahora);
         if (ahora == total) {
             este.estadoActual = Estados.STOP;
             if (este.repetir == Modos.REPETIR) {
@@ -170,12 +169,12 @@ public class Principal extends javax.swing.JFrame {
         BotonPP = new javax.swing.JButton();
         CheckRepetir = new javax.swing.JCheckBox();
         CheckAvanceA = new javax.swing.JCheckBox();
-        BarraProgreso = new javax.swing.JProgressBar();
         jSeparator1 = new javax.swing.JSeparator();
         BotonAvanzar = new javax.swing.JButton();
         BotonRetroceder = new javax.swing.JButton();
         LabelRuta = new javax.swing.JLabel();
         LabelMinutero = new javax.swing.JLabel();
+        jSlider1 = new javax.swing.JSlider();
         jMenuBar1 = new javax.swing.JMenuBar();
         MenuArchivo = new javax.swing.JMenu();
         jMenuArchivoAbrir = new javax.swing.JMenuItem();
@@ -257,6 +256,15 @@ public class Principal extends javax.swing.JFrame {
 
         LabelMinutero.setText("00:00:00");
 
+        jSlider1.setForeground(new java.awt.Color(0, 51, 255));
+        jSlider1.setValue(0);
+        jSlider1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider1StateChanged(evt);
+            }
+        });
+
         MenuArchivo.setText("Archivo");
 
         jMenuArchivoAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
@@ -319,20 +327,22 @@ public class Principal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(BotonAvanzar)
                 .addGap(107, 107, 107))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(TextNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(LabelMinutero)
-                .addGap(18, 18, 18)
-                .addComponent(BarraProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(43, Short.MAX_VALUE)
+                .addComponent(TextNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(44, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(LabelRuta)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(LabelMinutero))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(LabelRuta)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -357,15 +367,18 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(BotonAbrir)
                     .addComponent(CheckRepetir)
                     .addComponent(CheckAvanceA))
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(LabelRuta)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(BarraProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(LabelMinutero))
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(LabelRuta)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addComponent(LabelMinutero)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         pack();
@@ -451,6 +464,20 @@ public class Principal extends javax.swing.JFrame {
         About dialog = new About(this, true);
         dialog.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
+        if (jSlider1.getValueIsAdjusting()){
+            valorCambiado = true;
+            int evaluo = jSlider1.getValue();
+            //TextNombre.setText("Cambio: "+evaluo);
+            nuevoValor = evaluo;
+        }else{
+            if(valorCambiado){
+                valorCambiado = false;
+                Main.seek(nuevoValor);
+            }
+        }
+    }//GEN-LAST:event_jSlider1StateChanged
     static String argumentos = null;
 
     /**
@@ -506,7 +533,6 @@ public class Principal extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private static javax.swing.JProgressBar BarraProgreso;
     private javax.swing.JButton BotonAbrir;
     private javax.swing.JButton BotonAvanzar;
     private javax.swing.JButton BotonOtraVez;
@@ -525,6 +551,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JSeparator jSeparator1;
+    private static javax.swing.JSlider jSlider1;
     // End of variables declaration//GEN-END:variables
     private String archivo = null;
     private String nombreArch = null;
@@ -532,5 +559,7 @@ public class Principal extends javax.swing.JFrame {
     public Modos repetir = Modos.SINGLE;
     public Modos avance = Modos.AVANCEN;
     private static Principal este;
+    private boolean valorCambiado = false;
+    private Integer nuevoValor = 0;
     private Integer numErrores = 0;
 }
