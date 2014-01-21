@@ -73,8 +73,10 @@ public class Principal extends javax.swing.JFrame {
                 BotonStop.setEnabled(true);
                 BotonOtraVez.setEnabled(true);
                 CheckAvanceA.setEnabled(true);
+                jLabel1.setText(OrdenacionDeDirectorios.cadenaInfo());
                 try {
                     ManejadorReproductor.inicio(archivo, avance);
+                    ManejadorReproductor.volumen(sliderVolumen.getValue());
                     numErrores = 0;
                 } catch (ReproductorError exc) {
                     numErrores += 1;
@@ -85,7 +87,6 @@ public class Principal extends javax.swing.JFrame {
                         BotonAvanzar.doClick();
                     }
                 }
-                System.gc();
                 break;
             case RESUME:
                 BotonPP.setText("Pausa");
@@ -103,6 +104,7 @@ public class Principal extends javax.swing.JFrame {
                 ManejadorReproductor.pausa();
                 break;
         }
+        System.gc();
     }
 
     public void alterarMinutero(long microsec) {
@@ -176,6 +178,7 @@ public class Principal extends javax.swing.JFrame {
         LabelMinutero = new javax.swing.JLabel();
         sliderProgreso = new javax.swing.JSlider();
         sliderVolumen = new javax.swing.JSlider();
+        jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         MenuArchivo = new javax.swing.JMenu();
         jMenuArchivoAbrir = new javax.swing.JMenuItem();
@@ -266,6 +269,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        sliderVolumen.setFont(new java.awt.Font("Tahoma", 0, 8)); // NOI18N
         sliderVolumen.setMajorTickSpacing(25);
         sliderVolumen.setMinorTickSpacing(5);
         sliderVolumen.setPaintLabels(true);
@@ -277,6 +281,8 @@ public class Principal extends javax.swing.JFrame {
                 sliderVolumenStateChanged(evt);
             }
         });
+
+        jLabel1.setText("Anterior || Siguiente");
 
         MenuArchivo.setText("Archivo");
 
@@ -319,81 +325,75 @@ public class Principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(BotonRetroceder)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(BotonAvanzar)
-                .addGap(107, 107, 107))
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(BotonPP)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(BotonStop)
-                                .addGap(219, 219, 219)
-                                .addComponent(BotonOtraVez))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(BotonAbrir)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CheckRepetir)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(CheckAvanceA)))
-                        .addGap(0, 188, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(54, Short.MAX_VALUE)
-                        .addComponent(TextNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 32, Short.MAX_VALUE))
+                        .addComponent(BotonAbrir)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(BotonRetroceder)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(BotonAvanzar)
+                        .addGap(97, 97, 97))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(sliderProgreso, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(TextNombre))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(LabelRuta)
-                            .addComponent(sliderVolumen, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(157, 157, 157)
-                        .addComponent(LabelMinutero)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sliderProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(sliderVolumen, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(LabelRuta)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(LabelMinutero)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(CheckRepetir)
+                                        .addGap(51, 51, 51)
+                                        .addComponent(BotonStop)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(BotonPP)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(BotonOtraVez)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(CheckAvanceA)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BotonAvanzar)
-                    .addComponent(BotonRetroceder))
+                    .addComponent(BotonRetroceder)
+                    .addComponent(BotonAbrir))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(BotonPP)
-                        .addGap(1, 1, 1)
-                        .addComponent(BotonStop))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(BotonOtraVez)))
-                .addGap(29, 29, 29)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(BotonAbrir)
-                    .addComponent(CheckRepetir)
-                    .addComponent(CheckAvanceA))
-                .addGap(21, 21, 21)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sliderProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(LabelRuta)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(LabelMinutero, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(sliderVolumen, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(sliderProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LabelMinutero)
+                        .addComponent(CheckRepetir))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(BotonPP)
+                        .addComponent(BotonOtraVez)
+                        .addComponent(BotonStop)
+                        .addComponent(CheckAvanceA)))
+                .addGap(18, 18, Short.MAX_VALUE)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(LabelRuta)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sliderVolumen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)))
         );
 
         pack();
@@ -484,12 +484,12 @@ public class Principal extends javax.swing.JFrame {
         if (sliderProgreso.getValueIsAdjusting()){
             valorCambiado = true;
             int evaluo = sliderProgreso.getValue();
-            //TextNombre.setText("Cambio: "+evaluo);
             nuevoValor = evaluo;
         }else{
             if(valorCambiado){
                 valorCambiado = false;
                 ManejadorReproductor.seek(nuevoValor);
+                ManejadorReproductor.volumen(sliderVolumen.getValue());
             }
         }
     }//GEN-LAST:event_sliderProgresoStateChanged
@@ -566,6 +566,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu MenuAbout;
     private javax.swing.JMenu MenuArchivo;
     private javax.swing.JTextField TextNombre;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuArchivoAbrir;
     private javax.swing.JMenuItem jMenuArchivoSalir;
     private javax.swing.JMenuBar jMenuBar1;
