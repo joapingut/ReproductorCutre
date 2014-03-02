@@ -2,7 +2,6 @@ package jp.main;
 
 import java.io.*;
 
-import javax.swing.*;
 
 public class EntradaDatos{
 	
@@ -13,17 +12,16 @@ public class EntradaDatos{
 
 	//Este metodo capta una cadena del teclado
 	public static String incadena (){
-	InputStreamReader entrada =new InputStreamReader (System.in);
-	BufferedReader LectorDeBuffer = new BufferedReader (entrada);
-	String entradaS = null;
-	try {
+            InputStreamReader entrada =new InputStreamReader (System.in);
+            BufferedReader LectorDeBuffer = new BufferedReader (entrada);
+            String entradaS = null;
+            try {
 		entradaS = LectorDeBuffer.readLine();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		}
-
-	return entradaS;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return entradaS;
 	}
 	
 	//Este metodo capta un numero del teclado (int)
@@ -49,18 +47,16 @@ public class EntradaDatos{
 	
 	//Este metodo capta un caracter del teclado, si se escribe una cadena solo toma valido el primer caracter
 	public static char incaracter (){
-		InputStreamReader entrada =new InputStreamReader (System.in);
-		BufferedReader LectorDeBuffer = new BufferedReader (entrada);
-		String entradaS = null;
-		try {
-			entradaS = LectorDeBuffer.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			}
-
-		return entradaS.charAt(0);
-		}
+            InputStreamReader entrada =new InputStreamReader (System.in);
+            BufferedReader LectorDeBuffer = new BufferedReader (entrada);
+            String entradaS = null;
+            try {
+                entradaS = LectorDeBuffer.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return entradaS.charAt(0);
+	}
 	
 
 

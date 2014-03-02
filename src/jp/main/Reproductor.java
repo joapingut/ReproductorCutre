@@ -6,12 +6,15 @@ package jp.main;
 
 import java.io.File;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javazoom.jlgui.basicplayer.BasicController;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 import javazoom.jlgui.basicplayer.BasicPlayerEvent;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 import javazoom.jlgui.basicplayer.BasicPlayerListener;
 import jp.auxiliar.Modos;
+import jp.auxiliar.ModuloAntiErrores;
 import jp.interfaz.Principal;
 import jp.interfaz.errores.ErrorInicio;
 import jp.interfaz.errores.ReproductorError;
@@ -32,10 +35,11 @@ public class Reproductor implements BasicPlayerListener {
         this.Archivo = ruta;
         if (basicPlayer == null) {
             basicPlayer = new BasicPlayer();
+            File fil = new File(ruta);
             try {
-                File fil = new File(ruta);
                 bytesLength = fil.length();
                 basicPlayer.open(fil);
+                ModuloAntiErrores.apuntarAcierto(fil.getName().substring(fil.getName().lastIndexOf("."), fil.getName().length()));
             } catch (BasicPlayerException ex) {
                 if (capturar == Modos.AVANCEN) {
                     if (FU == null) {
@@ -43,13 +47,14 @@ public class Reproductor implements BasicPlayerListener {
                         comprobar = 1;
                     }
                     FU.setVisible(true);
-                    Main.stop();
+                    ManejadorReproductor.stop();
                 } else {
-                    Main.stop();
+                    ManejadorReproductor.stop();
                     basicPlayer.addBasicPlayerListener(this);
                     comprobar = 0;
                     throw new ReproductorError("Erorr en avance automatico");
                 }
+                ModuloAntiErrores.apuntarFallo(fil.getName().substring(fil.getName().lastIndexOf("."), fil.getName().length()));
             }
         }
         basicPlayer.addBasicPlayerListener(this);
@@ -61,7 +66,7 @@ public class Reproductor implements BasicPlayerListener {
     }
 
     public boolean equals(Reproductor a) {
-        boolean result = false;
+        boolean result;
         result = a.getruta().equals(this.getruta());
         if (result == false) {
             a.stop();
@@ -100,6 +105,24 @@ public class Reproductor implements BasicPlayerListener {
             // TODO Auto-generated catch block  e.printStackTrace();
         }
     }
+    
+    public void seek(int sek){
+        try {
+            basicPlayer.seek((long)sek);
+        } catch (BasicPlayerException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void volumen(int vol){
+        double ganancia = vol/100.0;
+        try {
+            System.out.println("VOL:"+ganancia);
+            basicPlayer.setGain(ganancia);
+        } catch (BasicPlayerException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * * Necesario por implementar BasicPlayerListener. Es ejecutado una vez se
@@ -129,10 +152,10 @@ public class Reproductor implements BasicPlayerListener {
             // Descomentando la siguiente línea se mosrtaría el progreso
             System.out.println(" -&CPC; " + properties.toString());
             System.out.println(" -&Progreso; " + progressNow);
-            System.out.println(" -&Duracion; " + properties.get("mp3.duration"));
+            System.out.println(" -&Duracion; " + properties.get("mp3.frame.bitrate"));
             System.out.println(" -&Total; " + (int) bytesLength);
-            System.out.println(" -&Microsegundo; " + microseconds);
-            Principal.rellenar(progressNow, (int) bytesLength, microseconds);
+            System.out.println(" -&Microsegundo; " + properties.get("mp3.position.microseconds"));
+            Principal.rellenar(progressNow, (int) bytesLength, new Long(properties.get("mp3.position.microseconds").toString()));
             tv = tn;
         }
     }

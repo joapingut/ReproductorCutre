@@ -5,30 +5,36 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import jp.auxiliar.Estados;
 import jp.auxiliar.Modos;
+import jp.auxiliar.ModuloAntiErrores;
 import jp.auxiliar.OrdenacionDeDirectorios;
 import jp.interfaz.errores.ErrorInicio;
 import jp.interfaz.errores.ReproductorError;
 import jp.main.ManejadorReproductor;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
  *
  * @author Joaquín
  */
 public class Principal extends javax.swing.JFrame {
+    
 
     /**
      * Creates new form Principal
      */
     public Principal() {
         este = this;
+        separador = File.separatorChar+"";
+        System.out.println("SEPE:"+separador);
+        ModuloAntiErrores.Cargar();
         initComponents();
     }
     
     public void entrada(String entrada){
         if (entrada != null) {
             archivo = entrada;
-            nombreArch = entrada.substring(entrada.lastIndexOf('\\') + 1);
-            OrdenacionDeDirectorios.crear(entrada.substring(0, entrada.lastIndexOf('\\')), nombreArch);
+            nombreArch = entrada.substring(entrada.lastIndexOf(separador) + 1);
+            OrdenacionDeDirectorios.crear(entrada.substring(0, entrada.lastIndexOf(separador)), nombreArch);
             TextNombre.setText(nombreArch);
             estadoActual = Estados.PLAY;
             alterarEstado();
@@ -43,7 +49,7 @@ public class Principal extends javax.swing.JFrame {
             archivo = file.getAbsolutePath();
             nombreArch = file.getName();
             //OrdenacionDeDirectorios.crear(file.getParent(), nombreArch);
-            OrdenacionDeDirectorios.crear(archivo.substring(0, archivo.lastIndexOf("\\")), nombreArch);//Con esta forma se puede usar el autoavanzar en las bibliotecas de windows
+            OrdenacionDeDirectorios.crear(archivo.substring(0, archivo.lastIndexOf(separador)), nombreArch);//Con esta forma se puede usar el autoavanzar en las bibliotecas de windows
             TextNombre.setText(nombreArch);
             estadoActual = Estados.PLAY;
             alterarEstado();
@@ -74,13 +80,18 @@ public class Principal extends javax.swing.JFrame {
                 BotonOtraVez.setEnabled(true);
                 CheckAvanceA.setEnabled(true);
                 jLabel1.setText(OrdenacionDeDirectorios.cadenaInfo());
+                if(!ModuloAntiErrores.esAceptable(archivo.substring(archivo.lastIndexOf("."), archivo.length()))){
+                    BotonAvanzar.doClick();
+                    break;
+                }
                 try {
                     ManejadorReproductor.inicio(archivo, avance);
                     ManejadorReproductor.volumen(sliderVolumen.getValue());
                     numErrores = 0;
+                    ModuloAntiErrores.guardar();
                 } catch (ReproductorError exc) {
                     numErrores += 1;
-                    if (numErrores > 5) {
+                    if (numErrores > 10) {
                         new ErrorInicio(this, true, "Error en el avance automatico, se obtivieron 5 o mas intentos erroneos de apertura seguidos").setVisible(true);
                         BotonStop.doClick();
                     } else {
@@ -179,6 +190,7 @@ public class Principal extends javax.swing.JFrame {
         sliderProgreso = new javax.swing.JSlider();
         sliderVolumen = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
+        CheckAleatorio = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         MenuArchivo = new javax.swing.JMenu();
         jMenuArchivoAbrir = new javax.swing.JMenuItem();
@@ -284,6 +296,8 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel1.setText("Anterior || Siguiente");
 
+        CheckAleatorio.setText("Aleatorio");
+
         MenuArchivo.setText("Archivo");
 
         jMenuArchivoAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
@@ -334,7 +348,9 @@ public class Principal extends javax.swing.JFrame {
                         .addComponent(BotonRetroceder)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(BotonAvanzar)
-                        .addGap(97, 97, 97))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(CheckAleatorio)
+                        .addGap(10, 10, 10))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(sliderProgreso, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -371,7 +387,8 @@ public class Principal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BotonAvanzar)
                     .addComponent(BotonRetroceder)
-                    .addComponent(BotonAbrir))
+                    .addComponent(BotonAbrir)
+                    .addComponent(CheckAleatorio))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -436,20 +453,30 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_CheckRepetirStateChanged
 
     private void BotonAvanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonAvanzarActionPerformed
-        String siguiente = OrdenacionDeDirectorios.siguiente();
+        String siguiente;
+        if(CheckAleatorio.isSelected()){
+            siguiente = OrdenacionDeDirectorios.aleatorio();
+        }else{
+            siguiente = OrdenacionDeDirectorios.siguiente();
+        }
         archivo = siguiente;
-        nombreArch = siguiente.substring(siguiente.lastIndexOf('\\') + 1);
-        OrdenacionDeDirectorios.crear(siguiente.substring(0, siguiente.lastIndexOf('\\')), nombreArch);
+        nombreArch = siguiente.substring(siguiente.lastIndexOf(separador) + 1);
+        //B OrdenacionDeDirectorios.crear(siguiente.substring(0, siguiente.lastIndexOf(separador)), nombreArch);
         TextNombre.setText(nombreArch);
         estadoActual = Estados.PLAY;
         alterarEstado();
     }//GEN-LAST:event_BotonAvanzarActionPerformed
 
     private void BotonRetrocederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonRetrocederActionPerformed
-        String siguiente = OrdenacionDeDirectorios.anterior();
+        String siguiente;
+        if(CheckAleatorio.isSelected()){
+            siguiente = OrdenacionDeDirectorios.aleatorio();
+        }else{
+            siguiente = OrdenacionDeDirectorios.anterior();
+        }
         archivo = siguiente;
-        nombreArch = siguiente.substring(siguiente.lastIndexOf('\\') + 1);
-        OrdenacionDeDirectorios.crear(siguiente.substring(0, siguiente.lastIndexOf('\\')), nombreArch);
+        nombreArch = siguiente.substring(siguiente.lastIndexOf(separador) + 1);
+        //B OrdenacionDeDirectorios.crear(siguiente.substring(0, siguiente.lastIndexOf(separador)), nombreArch);
         TextNombre.setText(nombreArch);
         estadoActual = Estados.PLAY;
         alterarEstado();
@@ -559,6 +586,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton BotonPP;
     private javax.swing.JButton BotonRetroceder;
     private javax.swing.JButton BotonStop;
+    private javax.swing.JCheckBox CheckAleatorio;
     private javax.swing.JCheckBox CheckAvanceA;
     private javax.swing.JCheckBox CheckRepetir;
     private javax.swing.JLabel LabelMinutero;
@@ -584,4 +612,5 @@ public class Principal extends javax.swing.JFrame {
     private boolean valorCambiado = false;
     private Integer nuevoValor = 0;
     private Integer numErrores = 0;
+    private final String separador;
 }

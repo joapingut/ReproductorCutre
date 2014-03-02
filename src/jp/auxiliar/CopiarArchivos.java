@@ -64,15 +64,4 @@ public class CopiarArchivos{
         in.close(); 
         out.close(); 
     } 
-     
-    /*public static void main(String arg[]){ 
-        CopiarArchivos cp = new CopiarArchivos(); 
-        try{ 
-            cp.copy(new File("log.mdb"),new File("directorio/log.mdb")); 
-            cp.copy(new File("hoja.jpg"),new File("directorio/hoja copy.jpg")); 
-            System.out.print("Copiado con exito"); 
-        }catch(Exception e){ 
-            System.out.println(e); 
-        } 
-    } */
 }  

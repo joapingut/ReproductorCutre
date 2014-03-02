@@ -90,7 +90,9 @@
                       <Component id="BotonRetroceder" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="BotonAvanzar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="CheckAleatorio" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
@@ -140,6 +142,7 @@
                   <Component id="BotonAvanzar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="BotonRetroceder" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="BotonAbrir" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="CheckAleatorio" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="TextNombre" min="-2" max="-2" attributes="0"/>
@@ -295,6 +298,11 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Anterior || Siguiente"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="CheckAleatorio">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Aleatorio"/>
       </Properties>
     </Component>
   </SubComponents>
