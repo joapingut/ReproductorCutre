@@ -7,12 +7,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,18 +30,19 @@ import java.util.logging.Logger;
 public class ModuloAntiErrores {
     
     private static boolean enUso = false;
-    private static File archivo;
-    private static Map<String, Integer> mapa;
+    private static boolean omitir = false;
+    private static String archivo = "/resources/Formatos.txt";
+    private static Set<String> mapa;
     
     public static void Cargar(){
         try {
-            archivo = new File(ModuloAntiErrores.class.getResource("/resources/Formatos.txt").toURI());
-            FileReader reade =  new FileReader(archivo);
+            InputStream is = ModuloAntiErrores.class.getResource(archivo).openStream();
+            InputStreamReader reade =  new InputStreamReader(is, "UTF-8");
             BufferedReader reader = new BufferedReader(reade);
             String linea;
-            mapa =  new HashMap<String, Integer>();
+            mapa =  new HashSet<String>();
             while((linea=reader.readLine())!=null){
-                mapa.put(linea.substring(0, linea.lastIndexOf("\\")), Integer.parseInt(linea.substring(linea.lastIndexOf("\\")+1, linea.length())));
+                mapa.add(linea);
             }
             System.out.println(mapa);
             enUso = true;
@@ -49,57 +54,14 @@ public class ModuloAntiErrores {
         } catch (IOException ex) {
             Logger.getLogger(ModuloAntiErrores.class.getName()).log(Level.SEVERE, null, ex);
             enUso = false;
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(ModuloAntiErrores.class.getName()).log(Level.SEVERE, null, ex);
-            enUso = false;
         }
     }
     
     public static boolean esAceptable(String ext){
-        if(!enUso)
+        if(!enUso || omitir)
             return true;
-        if(mapa.containsKey(ext))
-            return mapa.get(ext) < 6;
-        return true;
-    }
-    
-    public static void apuntarFallo(String ext){
-        if(!enUso)
-            return;
-        if(mapa.containsKey(ext))
-            mapa.put(ext, mapa.get(ext) + 1);
-        else 
-            mapa.put(ext, 1);
-    }
-    
-    public static void apuntarAcierto(String ext){
-        if(!enUso)
-            return;
-        if(mapa.containsKey(ext))
-            mapa.put(ext, mapa.get(ext) - 1);
-        else 
-            mapa.put(ext, 0);
-    }
-    
-    public static void guardar(){
-        if(!enUso)
-            return;
-        try {
-            FileWriter reade =  new FileWriter(archivo);
-            PrintWriter writer = new PrintWriter(reade);
-            String linea;
-            for(Entry e :mapa.entrySet()){
-                linea = e.getKey()+"\\"+e.getValue();
-                writer.println(linea);
-            }
-            System.out.println(mapa);
-            writer.close();
-            reade.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ModuloAntiErrores.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ModuloAntiErrores.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        enUso = false;
+        if(mapa.contains(ext))
+            return true;
+        return false;
     }
 }

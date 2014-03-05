@@ -48,7 +48,7 @@ public class About extends javax.swing.JDialog {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel4.setText("Descripción:");
 
-        LabelNumVersion.setText("1.7");
+        LabelNumVersion.setText("1.8");
 
         jLabel5.setText("Reproductor de audio multiformato.");
 

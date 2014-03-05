@@ -1,2 +1,6 @@
-.mp3\-9999
-.mp2\-9999
+.mp3
+.mp2
+.mp1
+.wav
+.midi
+.ogg

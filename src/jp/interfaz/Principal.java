@@ -81,21 +81,26 @@ public class Principal extends javax.swing.JFrame {
                 CheckAvanceA.setEnabled(true);
                 jLabel1.setText(OrdenacionDeDirectorios.cadenaInfo());
                 if(!ModuloAntiErrores.esAceptable(archivo.substring(archivo.lastIndexOf("."), archivo.length()))){
-                    BotonAvanzar.doClick();
+                    if(pulsadoAnterior)
+                        BotonRetroceder.doClick();
+                    else
+                        BotonAvanzar.doClick();
                     break;
                 }
                 try {
                     ManejadorReproductor.inicio(archivo, avance);
                     ManejadorReproductor.volumen(sliderVolumen.getValue());
                     numErrores = 0;
-                    ModuloAntiErrores.guardar();
                 } catch (ReproductorError exc) {
                     numErrores += 1;
                     if (numErrores > 10) {
                         new ErrorInicio(this, true, "Error en el avance automatico, se obtivieron 5 o mas intentos erroneos de apertura seguidos").setVisible(true);
                         BotonStop.doClick();
                     } else {
-                        BotonAvanzar.doClick();
+                        if(pulsadoAnterior)
+                            BotonRetroceder.doClick();
+                        else
+                            BotonAvanzar.doClick();
                     }
                 }
                 break;
@@ -468,6 +473,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_BotonAvanzarActionPerformed
 
     private void BotonRetrocederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonRetrocederActionPerformed
+        pulsadoAnterior = true;
         String siguiente;
         if(CheckAleatorio.isSelected()){
             siguiente = OrdenacionDeDirectorios.aleatorio();
@@ -480,6 +486,7 @@ public class Principal extends javax.swing.JFrame {
         TextNombre.setText(nombreArch);
         estadoActual = Estados.PLAY;
         alterarEstado();
+        pulsadoAnterior = false;
     }//GEN-LAST:event_BotonRetrocederActionPerformed
 
     private void BotonOtraVezActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonOtraVezActionPerformed
@@ -608,7 +615,10 @@ public class Principal extends javax.swing.JFrame {
     private Estados estadoActual = Estados.STOP;
     public Modos repetir = Modos.SINGLE;
     public Modos avance = Modos.AVANCEN;
+    
     private static Principal este;
+    public static boolean pulsadoAnterior = false;
+    
     private boolean valorCambiado = false;
     private Integer nuevoValor = 0;
     private Integer numErrores = 0;

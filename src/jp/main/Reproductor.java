@@ -15,6 +15,7 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
 import javazoom.jlgui.basicplayer.BasicPlayerListener;
 import jp.auxiliar.Modos;
 import jp.auxiliar.ModuloAntiErrores;
+import jp.auxiliar.OrdenacionDeDirectorios;
 import jp.interfaz.Principal;
 import jp.interfaz.errores.ErrorInicio;
 import jp.interfaz.errores.ReproductorError;
@@ -39,11 +40,11 @@ public class Reproductor implements BasicPlayerListener {
             try {
                 bytesLength = fil.length();
                 basicPlayer.open(fil);
-                ModuloAntiErrores.apuntarAcierto(fil.getName().substring(fil.getName().lastIndexOf("."), fil.getName().length()));
             } catch (BasicPlayerException ex) {
                 if (capturar == Modos.AVANCEN) {
                     if (FU == null) {
                         FU = new ErrorInicio(new javax.swing.JFrame(), true, "Error al abrir: \n" + ex.getMessage());
+                        OrdenacionDeDirectorios.refrescar(true);
                         comprobar = 1;
                     }
                     FU.setVisible(true);
@@ -54,7 +55,6 @@ public class Reproductor implements BasicPlayerListener {
                     comprobar = 0;
                     throw new ReproductorError("Erorr en avance automatico");
                 }
-                ModuloAntiErrores.apuntarFallo(fil.getName().substring(fil.getName().lastIndexOf("."), fil.getName().length()));
             }
         }
         basicPlayer.addBasicPlayerListener(this);

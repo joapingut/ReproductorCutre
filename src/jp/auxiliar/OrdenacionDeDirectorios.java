@@ -12,6 +12,7 @@ import java.util.Random;
 public class OrdenacionDeDirectorios {
     
     private static int actual;
+    private static int tamDir = -1;
     private static File[] ficheros;
     private static String directorio;
     private static Random randoni;
@@ -30,18 +31,22 @@ public class OrdenacionDeDirectorios {
                     actual=vervose;
                 }
                 aux.add(fichero);
-            }            
-        }
-        System.out.println(aux);
-        ficheros = new File[aux.size()];
-        for(int i = 0; i<aux.size();i++)
-            ficheros[i] = aux.get(i);
-        randoni = new Random();
+            }
+            tamDir = vervose;
+            System.out.println(aux);
+            ficheros = new File[aux.size()];
+            for(int i = 0; i<aux.size();i++)
+                ficheros[i] = aux.get(i);
+            randoni = new Random();
         
-        System.out.println(vervose);
+            System.out.println(vervose);
+        }else{
+            System.out.println("FALLO: desactivado directorios");
+        }
     }
     
     public static String siguiente(){
+        refrescar(false);
         int siguiente=actual+1;
         if(siguiente>=ficheros.length){
         siguiente=0;
@@ -51,6 +56,7 @@ public class OrdenacionDeDirectorios {
     }
     
     public static String anterior(){
+        refrescar(false);
         int siguiente=actual-1;
         if(siguiente<0){
         siguiente=ficheros.length-1;
@@ -60,6 +66,7 @@ public class OrdenacionDeDirectorios {
     }
     
     public static String aleatorio(){
+        refrescar(false);
         int ran = actual;
         while (ran == actual){
             ran = randoni.nextInt(ficheros.length-1);
@@ -70,6 +77,13 @@ public class OrdenacionDeDirectorios {
     
     public static String getDirectorioActual(){
         return directorio;
+    }
+    
+    public static void refrescar(boolean forzar){
+        File directori= new File (directorio);
+        if (forzar || directori.listFiles().length != tamDir){
+            crear(directorio, ficheros[actual].getName());
+        }
     }
     
     public static String cadenaInfo(){
