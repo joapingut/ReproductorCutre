@@ -603,7 +603,14 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_BotonCaratulaActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        if(ventanaOpciones != null){
+            ventanaOpciones.setLocationRelativeTo(this);
+            ventanaOpciones.setVisible(true);
+            return;
+        }
         IUOpciones dialog = new IUOpciones();
+        dialog.setLocationRelativeTo(this);
+        ventanaOpciones = dialog;
         dialog.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
     static String argumentos = null;
@@ -704,4 +711,5 @@ public class Principal extends javax.swing.JFrame {
     private final String separador;
     
     private static MostrarCaratula ventanaCaratula = null;
+    private static IUOpciones ventanaOpciones = null;
 }

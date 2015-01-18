@@ -52,6 +52,8 @@ public class IUOpciones extends javax.swing.JFrame {
         jButtonRestablecer = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Opciones");
+        setResizable(false);
 
         jTextFieldRutaDefecto.setText("Ruta");
 
