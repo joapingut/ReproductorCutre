@@ -1,16 +1,20 @@
 package jp.interfaz;
 
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
+import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import jp.auxiliar.Estados;
 import jp.auxiliar.Modos;
 import jp.auxiliar.ModuloAntiErrores;
+import jp.auxiliar.ModuloPropiedades;
 import jp.auxiliar.OrdenacionDeDirectorios;
 import jp.interfaz.errores.ErrorInicio;
 import jp.interfaz.errores.ReproductorError;
 import jp.main.ManejadorReproductor;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
  *
@@ -24,13 +28,31 @@ public class Principal extends javax.swing.JFrame {
      */
     public Principal() {
         este = this;
-        separador = File.separatorChar+"";
+        separador = ModuloPropiedades.separador;
         System.out.println("SEPE:"+separador);
         ModuloAntiErrores.Cargar();
         initComponents();
     }
     
     public void entrada(String entrada){
+        if(ModuloPropiedades.autoAvance){
+            this.CheckAvanceA.setSelected(true);
+        }
+        if(ModuloPropiedades.autoAleatorio){
+            this.CheckAleatorio.setSelected(true);
+        }
+        if(archivo != null){
+            if(entrada == null){
+                OrdenacionDeDirectorios.crear(archivo, null);
+                if(ModuloPropiedades.autoPlay){
+                    entrada = OrdenacionDeDirectorios.aleatorio();
+                }else{
+                    archivo = OrdenacionDeDirectorios.aleatorio();
+                    nombreArch = archivo.substring(archivo.lastIndexOf(separador) + 1);
+                    TextNombre.setText(nombreArch);
+                }
+            }
+        }
         if (entrada != null) {
             archivo = entrada;
             nombreArch = entrada.substring(entrada.lastIndexOf(separador) + 1);
@@ -65,6 +87,11 @@ public class Principal extends javax.swing.JFrame {
         BotonAvanzar.setEnabled(true);
         BotonRetroceder.setEnabled(true);
         LabelRuta.setText(OrdenacionDeDirectorios.getDirectorioActual());
+        if(ventanaCaratula != null){
+            ventanaCaratula.setVisible(false);
+            ventanaCaratula.dispose();
+            ventanaCaratula = null;
+        }
         switch (estadoActual) {
             case STOP:
                 BotonPP.setText("Play");
@@ -196,11 +223,13 @@ public class Principal extends javax.swing.JFrame {
         sliderVolumen = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
         CheckAleatorio = new javax.swing.JCheckBox();
+        BotonCaratula = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         MenuArchivo = new javax.swing.JMenu();
         jMenuArchivoAbrir = new javax.swing.JMenuItem();
         jMenuArchivoSalir = new javax.swing.JMenuItem();
         MenuAbout = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -303,6 +332,13 @@ public class Principal extends javax.swing.JFrame {
 
         CheckAleatorio.setText("Aleatorio");
 
+        BotonCaratula.setText("Caratula");
+        BotonCaratula.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BotonCaratulaActionPerformed(evt);
+            }
+        });
+
         MenuArchivo.setText("Archivo");
 
         jMenuArchivoAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
@@ -327,6 +363,14 @@ public class Principal extends javax.swing.JFrame {
 
         MenuAbout.setText("Ayuda");
 
+        jMenuItem2.setText("Opciones");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        MenuAbout.add(jMenuItem2);
+
         jMenuItem1.setText("Acerca de ...");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -349,6 +393,8 @@ public class Principal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(BotonAbrir)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(BotonCaratula)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(BotonRetroceder)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -357,33 +403,31 @@ public class Principal extends javax.swing.JFrame {
                         .addComponent(CheckAleatorio)
                         .addGap(10, 10, 10))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(sliderProgreso, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(sliderProgreso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(TextNombre))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(LabelRuta)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(LabelMinutero)
+                                .addGap(18, 18, 18)
+                                .addComponent(CheckRepetir)
+                                .addGap(51, 51, 51)
+                                .addComponent(BotonStop)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(BotonPP)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(BotonOtraVez)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CheckAvanceA)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(sliderVolumen, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(LabelRuta)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(LabelMinutero)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(CheckRepetir)
-                                        .addGap(51, 51, 51)
-                                        .addComponent(BotonStop)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(BotonPP)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(BotonOtraVez)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(CheckAvanceA)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                                .addComponent(sliderVolumen, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -393,7 +437,8 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(BotonAvanzar)
                     .addComponent(BotonRetroceder)
                     .addComponent(BotonAbrir)
-                    .addComponent(CheckAleatorio))
+                    .addComponent(CheckAleatorio)
+                    .addComponent(BotonCaratula))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TextNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -532,6 +577,35 @@ public class Principal extends javax.swing.JFrame {
         int evaluo = sliderVolumen.getValue();
         ManejadorReproductor.volumen(evaluo);
     }//GEN-LAST:event_sliderVolumenStateChanged
+
+    private void BotonCaratulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonCaratulaActionPerformed
+        // TODO add your handling code here:
+        if(ventanaCaratula != null){
+            ventanaCaratula.setLocationRelativeTo(this);
+            ventanaCaratula.setVisible(true);
+            return;
+        }
+        try{
+            Mp3File mp3file = new Mp3File(this.archivo);
+            if (mp3file.hasId3v2Tag()) {
+                ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+                byte[] imageData = id3v2Tag.getAlbumImage();
+                if (imageData != null) {
+                    Image img = ImageIO.read(new ByteArrayInputStream(imageData));
+                    MostrarCaratula dialog = new MostrarCaratula(img);
+                    dialog.setLocationRelativeTo(this);
+                    dialog.setVisible(true);
+                    ventanaCaratula = dialog;
+                }
+            }
+        }catch(Exception e){
+        }
+    }//GEN-LAST:event_BotonCaratulaActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        IUOpciones dialog = new IUOpciones();
+        dialog.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
     static String argumentos = null;
 
     /**
@@ -543,6 +617,7 @@ public class Principal extends javax.swing.JFrame {
         } else {
             System.out.println(args.toString());
             for (int i = 0; i < args.length; i++) {
+                System.out.println(args[i].toString());
                 if (i == 0) {
                     argumentos = args[i];
                 } else {
@@ -552,6 +627,8 @@ public class Principal extends javax.swing.JFrame {
             }
         }
         System.out.println(argumentos);
+        
+        ModuloPropiedades.cargar();
 
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -589,6 +666,7 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BotonAbrir;
     private javax.swing.JButton BotonAvanzar;
+    private javax.swing.JButton BotonCaratula;
     private javax.swing.JButton BotonOtraVez;
     private javax.swing.JButton BotonPP;
     private javax.swing.JButton BotonRetroceder;
@@ -606,11 +684,12 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuArchivoSalir;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JSeparator jSeparator1;
     private static javax.swing.JSlider sliderProgreso;
     private javax.swing.JSlider sliderVolumen;
     // End of variables declaration//GEN-END:variables
-    private String archivo = null;
+    private String archivo = ModuloPropiedades.rutaPorDefecto;
     private String nombreArch = null;
     private Estados estadoActual = Estados.STOP;
     public Modos repetir = Modos.SINGLE;
@@ -623,4 +702,6 @@ public class Principal extends javax.swing.JFrame {
     private Integer nuevoValor = 0;
     private Integer numErrores = 0;
     private final String separador;
+    
+    private static MostrarCaratula ventanaCaratula = null;
 }

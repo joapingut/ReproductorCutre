@@ -1,6 +1,7 @@
 package jp.main;
 
 //Ejemplo de ventanas. Cajas de texto, etiquetas
+import java.io.FileNotFoundException;
 import jp.auxiliar.Modos;
 
 //y botones en java. 
@@ -11,7 +12,7 @@ public class ManejadorReproductor extends EntradaDatos {
     private static String archivo = null;
     private static String aleatorio = "" + Math.random() / 99;
 
-    public static int inicio(String recepcion, Modos avanceAutomatico) {
+    public static int inicio(String recepcion, Modos avanceAutomatico){
 
         String arch = recepcion;
         archivo = arch;
